@@ -1,5 +1,4 @@
-body
-{
+body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
@@ -7,14 +6,12 @@ body
     height: 100%;
 }
 
-form
-{
+form {
     margin: 0;
     padding: 0;
 }
 
-a
-{
+a {
     margin-top: 0;
     margin-bottom: 0;
     cursor: pointer;
@@ -22,18 +19,15 @@ a
     text-decoration: none;
 }
 
-a:hover
-{
+a:hover {
     color: #66ccff;
 }
 
-td
-{
+td {
     padding-right: 8px;
 }
 
-#header
-{
+#header {
     font-size: 30px;
     background-color: #222222;
     color: #9d9d9d;
@@ -48,37 +42,40 @@ td
     justify-content: space-between;
 }
 
-#error
-{
+#error {
     padding-top: 15px;
     padding-left: 30px;
 }
 
-#header_left
-{
+#header_left {
     float: left;
 }
 
-#header_right
-{
+#header_left a {
+    color: #9d9d9d;
+}
+
+
+#header_left a:hover {
+    color: #66ccff;
+}
+
+#header_right {
     display: flex;
     align-items: center;
     font-size: 20px;
 }
 
-#header_right a
-{
+#header_right a {
     color: #9d9d9d;
 }
 
 
-#header_right a:hover
-{
+#header_right a:hover {
     color: #66ccff;
 }
 
-#login
-{
+#login {
     width: 100%;
     position: absolute;
     top: 60px;
@@ -86,45 +83,45 @@ td
     display: flex;
 }
 
-#login_form
-{
-    width: 250px;
+#login_form {
+    width: 400px;
     padding: 10px;
     margin: auto;
     align-self: center;
 }
+#login_form > form {
+    width: 300px;
+}
 
-#domain, #password
-{
+#username, #password {
     width: 100%;
     padding-bottom: 5px;
     display: flex;
 }
 
-#domain_left, #password_left
-{
+#username_left, #password_left {
     align-self: center;
 }
 
-#domain_right, #password_right
-{
+#username_right, #password_right {
     margin-left: auto;
 }
 
-#domain_input, #password_input
-{
+#username_input, #password_input {
     width: 170px;
 }
 
-#enter
-{
-    padding-top: 5px;
+#enter {
+    width: 100%;
+	padding-top: 5px;
     display: inline-block;
-    margin-left: 80px;
+#    margin-left: 80px;
+}
+#enter > input {
+    width: 100%;
 }
 
-#breadcrumbs
-{
+#breadcrumbs {
     height: 40px;
     background-color: #f5f5f5;
     margin-top: 20px;
@@ -136,43 +133,36 @@ td
     align-items: center;
 }
 
-#index
-{
+#index {
     margin-left: 30px;
 }
 
-#lists_header
-{
+#lists_header {
     margin-bottom: 10px;
     display: flex;
     align-items: center;
 }
 
-#lists
-{
+#lists {
     padding-left: 17px;
     margin-bottom: 5px;
 }
 
-#add_list
-{
+#add_list {
     display: flex;
     padding-left: 20px;
 }
 
-#add_list_input
-{
+#add_list_input {
     width: 170px;
 }
 
-.tooltip
-{
+.tooltip {
     position: relative;
     display: inline-block;
 }
 
-.tooltip .help_add_list
-{
+.tooltip .help_add_list {
     visibility: hidden;
     width: 450px;
     background-color: #111;
@@ -186,8 +176,7 @@ td
     left: 170%;
 }
 
-.tooltip .help_add_list::after
-{
+.tooltip .help_add_list::after {
     content: "";
     position: absolute;
     top: 5px;
@@ -198,135 +187,131 @@ td
     border-color: transparent #111 transparent transparent;
 }
 
-.tooltip:hover .help_add_list
-{
+.tooltip:hover .help_add_list {
     visibility: visible;
 }
 
-#edit_page
-{
+#edit_page {
     display: table;
     width: 100%;
     height: 100%;
 }
 
-#save_list
-{
+.success {
+    font-weight: bold;
+    color: #00aa00;
+    text-align: center;
+}
+
+#save_list {
+    background-color: #f5f5f5;
     margin-top: 20px;
     margin-bottom: 20px;
     margin-left: 30px;
     margin-right: 30px;
-    height: calc(100% - 170px);
+    height: calc(100% - 280px);
     min-height: 400px;
     width: calc(100% - 60px);
 }
 
-#column_left
-{
+#column_left {
     height: 100%;
     display: table-cell;
     min-width: 300px;
 }
 
-#subscribers_header
-{
+#subscribers_header {
     height: 30px;
-    width: 300px;
+    width: 350px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-left: auto;
 }
 
-#subscribers_body
-{
-    height: calc(100% - 100px);
-    width: 300px;
+#subscribers_body {
+    height: calc(100% - 50px);
+    width: 350px;
     margin-left: auto;
 }
 
-#subscribers
-{
+#subscribers {
     height: 100%;
     width: 100%;
 }
 
-#column_right
-{
+#column_right {
     height: 100%;
     display: table-cell;
     min-width: 320px;
 }
 
-#moderators_header
-{   
+#moderators_header {   
     height: 30px;
-    width: 300px;
+    width: 350px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-#moderators_body
-{
-    height: calc(100% - 100px);
-    width: 300px;
+#moderators_body {
+    height: calc(100% - 50px);
+    width: 350px;
 }
 
-#moderators
-{   
+#moderators {   
     height: 100%;
     width: 100%;
 }
 
-#column_middle
-{
+#column_middle {
     padding-top: 30px;
     width: 500px;
-    height: 100%;
     display: table-cell;
     min-width: 440px;
     vertical-align: top;
     padding-bottom: 20px;
 }
 
-#column_middle_inner
-{
+#column_middle_inner {
     height: 100%;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
 }
 
-#table_middle
-{
-    text-align: right;
-    margin: auto;
+.table_middle {
+	width: 100%;
+#	text-align: center;
+	margin-bottom: 30px;
+	padding: 0 25px 0 25px;
 }
 
-#table_middle td
-{
+#table_middle td {
     padding-bottom: 10px;
 }
 
-#prefix, #list_type
-{
+#prefix, #list_type {
     width: 100%;
 }
 
-#footer
-{
+#footer {
     width: 100%;
     height: 100px;
 }
 
-#save_btn
-{
+#save_btn {
     text-align: center;
+    width: 100%;
+    height: 30px;
+}
+#save_btn > input {
+    text-align: center;
+    height: 30px;
+    width: 50%;
 }
 
-.tooltip .help_sub, .tooltip .help_mod
-{
+.tooltip .help_sub, .tooltip .help_mod {
     visibility: hidden;
     width: 250px;
     background-color: #111;
@@ -341,8 +326,7 @@ td
     margin-left: -133px;
 }
 
-.tooltip .help_sub::after, .tooltip .help_mod::after
-{
+.tooltip .help_sub::after, .tooltip .help_mod::after {
     content: "";
     position: absolute;
     bottom: 100%;
@@ -353,13 +337,11 @@ td
     border-color: transparent transparent #111 transparent;
 }
 
-.tooltip:hover .help_sub, .tooltip:hover .help_mod
-{
+.tooltip:hover .help_sub, .tooltip:hover .help_mod {
     visibility: visible;
 }
 
-.tooltip .help_list_type
-{
+.tooltip .help_list_type {
     visibility: hidden;
     width: 300px;
     background-color: #111;
@@ -373,8 +355,7 @@ td
     right: 170%;
 }
 
-.tooltip .help_list_type::after
-{
+.tooltip .help_list_type::after {
     content: "";
     position: absolute;
     top: 5px;
@@ -385,19 +366,16 @@ td
     border-color: transparent transparent transparent #111;
 }
 
-.tooltip:hover .help_list_type
-{
+.tooltip:hover .help_list_type {
     visibility: visible;
 }
 
-#list_type_header, #prefix_header, #footer_header, #notmetoo_header
-{
+#list_type_header, #prefix_header, #footer_header, #notmetoo_header, #listdescription_header {
     display: flex;
     align-items: center;
 }
 
-.tooltip .help_prefix
-{
+.tooltip .help_prefix {
     visibility: hidden;
     width: 200px;
     background-color: #111;
@@ -411,8 +389,7 @@ td
     right: 160%;
 }
 
-.tooltip .help_prefix::after
-{
+.tooltip .help_prefix::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -423,13 +400,11 @@ td
     border-color: transparent transparent transparent #111;
 }
 
-.tooltip:hover .help_prefix
-{
+.tooltip:hover .help_prefix {
     visibility: visible;
 }
 
-.tooltip .help_footer
-{
+.tooltip .help_footer {
     visibility: hidden;
     width: 200px;
     background-color: #111;
@@ -443,8 +418,7 @@ td
     right: 160%;
 }
 
-.tooltip .help_footer::after
-{
+.tooltip .help_footer::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -455,19 +429,16 @@ td
     border-color: transparent transparent transparent #111;
 }
 
-.tooltip:hover .help_footer
-{
+.tooltip:hover .help_footer {
     visibility: visible;
 }
 
-#notmetoo_checkbox
-{
+#notmetoo_checkbox {
     margin-left: 5px;
     margin-right: 5px;
 }
 
-.tooltip .help_notmetoo
-{
+.tooltip .help_notmetoo {
     visibility: hidden;
     width: 300px;
     background-color: #111;
@@ -481,8 +452,7 @@ td
     right: 160%;
 }
 
-.tooltip .help_notmetoo::after
-{
+.tooltip .help_notmetoo::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -493,7 +463,6 @@ td
     border-color: transparent transparent transparent #111;
 }
 
-.tooltip:hover .help_notmetoo
-{
+.tooltip:hover .help_notmetoo {
     visibility: visible;
 }

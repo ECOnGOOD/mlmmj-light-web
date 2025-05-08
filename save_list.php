@@ -1,5 +1,7 @@
 <?php
 
+require("init.php");
+
 function trim_array($arr)
 {
     // Trim each array element
@@ -15,14 +17,11 @@ function trim_array($arr)
     return $clean;
 } 
 
-require("init.php");
 $list_name = isset( $_POST["list_name"] ) ? $_POST["list_name"] : NULL;
-$new_list_type = isset( $_POST["list_type"] ) ? $_POST["list_type"] : NULL;
 $prefix = isset ( $_POST["prefix"] ) ? $_POST["prefix"] : NULL;
-$footer = isset( $_POST["footer"] ) ? $_POST["footer"] : NULL;
+$listdescription = isset ( $_POST["listdescription"] ) ? $_POST["listdescription"] : NULL;
 $new_subscribers = isset ( $_POST["subscribers"] ) ? $_POST["subscribers"] : NULL;
 $moderators = isset ( $_POST["moderators"] ) ? $_POST["moderators"] : NULL;
-$notmetoo = isset ( $_POST["notmetoo"] ) ? $_POST["notmetoo"] : NULL;
 
 if ( !isset($_SESSION["auth"]) || $_SESSION["auth"] != 1 )
 {
@@ -34,45 +33,38 @@ if ( !isset($_SESSION["auth"]) || $_SESSION["auth"] != 1 )
 $domain = $_SESSION["domain"];
 
 // We do not print any error in the next four cases, because a legitimate
-// user will never produce such results, even with disables javascript
-if ( preg_match("/[^a-z0-9_]/", $list_name) )
+// user will never produce such results, even with disabled javascript
+if ( preg_match("/[^a-z0-9_-]/", $list_name) )
 {
     header("Location: error.php");
     exit();
 }
 
-if ( strlen($list_name) > 30 )
+if ( strlen($list_name) > 50 )
 {
     header("Location: error.php");
     exit();
 }
 
 // Test list existence
-if( !is_dir("$lists_path/$domain/$list_name") )
+if( !is_dir("$lists_path/$domain/$list_name") || $list_name == "" )
 {
     header("Location: error.php");
     exit();
 }
 
-// Test list type
-if ($new_list_type !== "0" && $new_list_type !== "1" && $new_list_type !== "2")
+# Check whether the user may edit this list as he owns it
+if (!in_array($list_name, $_SESSION["array_lists_owned"]))
 {
+    $_SESSION["error_code"] = 11;
     header("Location: error.php");
-    exit();
+    exit;
 }
 
 if ( strlen($prefix) > 128 )
 {
     // Prefix must not be longer than 128 characters
     $_SESSION["error_code"] = 7;
-    header("Location: error.php");
-    exit();
-}
-
-if ( strlen($footer) > 1024 )
-{           
-    // Footer must not be longer than 1024 characters
-    $_SESSION["error_code"] = 8;
     header("Location: error.php");
     exit();
 }
@@ -98,7 +90,7 @@ if ($new_subscribers != NULL)
                 header("Location: error.php");
                 exit();
             }
-            shell_exec("/usr/bin/mlmmj-sub -L $lists_path/$domain/$list_name -a $new_subscriber -fq");
+            shell_exec("/usr/bin/mlmmj-sub -L $lists_path/$domain/$list_name -a $new_subscriber -fsq");
         }
     }
 
@@ -111,108 +103,116 @@ if ($new_subscribers != NULL)
     }
 }
 
-$old_list_type = file_get_contents("$lists_path/$domain/$list_name/list_type.txt");
+# --- SECURITY CHECK ---
 
-// If list type changed
-if ($new_list_type !== $old_list_type)
+# Check if someone sent a manipulated POST request
+
+# Check whether there is a moderators file
+if (file_exists("$lists_path/$domain/$list_name/control/moderators"))
 {
-    // Delete all files except three in control dir
-    shell_exec("cd $lists_path/$domain/$list_name/control/; \
-                ls | grep -E -v '(footer-html|footer-text|listaddress|owner|delheaders|addtohdr|customheaders)' | xargs rm");
-    // Create necessary files
-    switch ($new_list_type)
+    // Get a moderators list
+    $moderators_check = file_get_contents("$lists_path/$domain/$list_name/control/moderators");
+    // Remove trailing empty symbols
+    $moderators_check = trim($moderators_check);
+
+    # If theres no @ inside the file it seems to be empty
+    if (!preg_match("/[@]/", $moderators_check))
     {
-        case 0:  // Moderated list
-            shell_exec("cd $lists_path/$domain/$list_name/control/; \
-                        touch closedlistsub moderated subonlypost notifymod noarchive noget nosubonlydenymails \
-                              nodigestsub nolistsubsemail ifmodsendonlymodmoderate");
-            break;
-        case 1:  // News list
-            shell_exec("cd $lists_path/$domain/$list_name/control/; \
-                        touch moderated modonlypost noarchive nosubonlydenymails nodigestsub nomodonlydenymails \
-                              nolistsubsemail subonlypost ifmodsendonlymodmoderate");
-            break;
-        case 2:  // Conference list
-            shell_exec("cd $lists_path/$domain/$list_name/control/; \
-                        touch closedlistsub subonlypost noarchive noget nosubonlydenymails nodigestsub \
-                              nolistsubsemail");
-            break;
+        $moderators = NULL;
     }
-    file_put_contents("$lists_path/$domain/$list_name/list_type.txt", "$new_list_type");
 }
-
-if ($footer !== NULL)
+else
 {
-    // Delete all \r symbols
-    $footer = str_replace("\r", "", $footer);
-
-    file_put_contents("$lists_path/$domain/$list_name/control/footer-text", "$footer\n");
-
-    // Insert <br>
-    $footer = str_replace("\n", "<br>\n", $footer);
-    file_put_contents("$lists_path/$domain/$list_name/control/footer-html", "$footer\n");
+    $moderators = NULL;
 }
+
+# --- SECURITY CHECK ---
 
 if ($moderators !== NULL)
 {
-    $moderators_array = explode("\n", $moderators);
-    $moderators_array = trim_array($moderators_array);
-
-    // Check moderators emails
-    foreach ($moderators_array as $moderator)
+    # If theres an @ inside the new moderators variable it seems to be empty
+    if (preg_match("/[@]/", $moderators))
     {
-        if ( !filter_var($moderator, FILTER_VALIDATE_EMAIL) )
+        $moderators_array = explode("\n", $moderators);
+        $moderators_array = trim_array($moderators_array);
+
+        // Check moderators emails
+        foreach ($moderators_array as $moderator)
         {
-            // Incorrect email
-            $_SESSION["error_code"] = 10;
-            header("Location: error.php");
-            exit();
+            if ( !filter_var($moderator, FILTER_VALIDATE_EMAIL) )
+            {
+                // Incorrect email
+                $_SESSION["error_code"] = 10;
+                header("Location: error.php");
+                exit();
+            }
         }
-    }
 
-    // If this not a conference list type, then write moderators
-    if ($new_list_type !== "2")
-    {
         file_put_contents("$lists_path/$domain/$list_name/control/moderators", "$moderators");
     }
-
-    // If this is a news list type, create access file (only mods can post)
-    if ($new_list_type == "1")
+    else
     {
-        // Delete all \r symbols
-        $moderators = str_replace("\r", "", $moderators);
-        // Escape dots
-        $moderators = str_replace(".", "\.", $moderators);
-        // Add first allow
-        $moderators = "allow ^From:.*" . $moderators;
-        // Add all other allows
-        $moderators = str_replace("\n", "\nallow ^From:.*", $moderators);
-        // Add discard as last string
-        $moderators = $moderators . "\ndiscard";
-        // Add .* to each allow
-        $moderators = str_replace("\n", ".*\n", $moderators);
-        // Write result
-        file_put_contents("$lists_path/$domain/$list_name/control/access", "$moderators");
+        # Someone wants to clear the moderators list which is not allowed (yet)
+        #$_SESSION["error_code"] = 12;
+        #header("Location: error.php");
+        #exit();
     }
 }
 
+# Add prefix to the respective file
 if ($prefix !== NULL)
 {
     file_put_contents("$lists_path/$domain/$list_name/control/prefix", "$prefix");
 }
 
-if ($notmetoo === "checked")
+# Add listdescription to the respective file
+if ($listdescription !== NULL)
 {
-    shell_exec("touch $lists_path/$domain/$list_name/control/notmetoo");
+    file_put_contents("$lists_path/$domain/$list_name/control/listdescription", "$listdescription");
+}
+
+# The following code section is for audit log only
+
+# -------------------------------------------------------------
+
+# Check whether there is a moderators file
+if (file_exists("$lists_path/$domain/$list_name/control/moderators"))
+{
+    // Get a moderators list
+    $old_moderators = file_get_contents("$lists_path/$domain/$list_name/control/moderators");
+    // Remove trailing empty symbols
+    $old_moderators = trim($old_moderators);
+
+    # If theres no @ inside the file it seems to be empty
+    if (!preg_match("/[@]/", $old_moderators))
+    {
+        $old_moderators = NULL;
+    }
 }
 else
 {
-    if ( file_exists("$lists_path/$domain/$list_name/control/notmetoo") )
+    $old_moderators = NULL;
+}
+
+// Get old prefix
+$old_prefix = file_get_contents("$lists_path/$domain/$list_name/control/prefix");
+// Remove trailing empty symbols
+$old_prefix = trim($old_prefix);
+
+# -------------------------------------------------------------
+
+$return = audit_log("save_list", "Old subscribers: " . json_encode($old_subscribers) . " - Old prefix: " . $old_prefix . " - Old moderators: " . json_encode($old_moderators));
+if (!$return["success"])
+{
+    # If debug mode is on show error message
+    if ($debug)
     {
-        shell_exec("rm $lists_path/$domain/$list_name/control/notmetoo");
+        echo $return["message"];
     }
 }
 
-header("Location: edit_list.php?list_name=$list_name");
+header("Location: edit_list.php?list_name=$list_name&success");
+
 exit();
+
 ?>
