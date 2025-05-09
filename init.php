@@ -22,7 +22,7 @@ $domain_global = "mlmmj";
 $rc_webhook = "";
 
 # No need to change this values
-$current_version = "v1.2";
+$current_version = "v1.2.1";
 $headline = "Manage your Mailing Lists " . $current_version;
 $debug = false;
 
