@@ -23,7 +23,7 @@ $rc_webhook = "";
 
 # No need to change this values
 $current_version = "v1.2";
-$headline = "Manage your ECG mailing lists " . $current_version;
+$headline = "Manage your Mailing Lists " . $current_version;
 $debug = false;
 
 # -------------------------------------------------------------
